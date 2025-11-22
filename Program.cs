@@ -35,6 +35,7 @@ namespace MohamedTwo
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT"
+                    
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -89,7 +90,6 @@ namespace MohamedTwo
                     }
                 };
             });
-           
             var app = builder.Build();
 
             // ? HTTP request pipeline
