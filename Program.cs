@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 using System.Text;
+using MohamedTwo.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MohamedTwo
 {
@@ -55,6 +59,8 @@ namespace MohamedTwo
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+    
             // ? JWT Authentication
             builder.Services.AddAuthentication(options =>
             {
@@ -83,6 +89,7 @@ namespace MohamedTwo
                     }
                 };
             });
+           
             var app = builder.Build();
 
             // ? HTTP request pipeline
