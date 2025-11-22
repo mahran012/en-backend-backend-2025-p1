@@ -8,6 +8,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 using System.Text;
 using MohamedTwo.Models;
+using MohamedTwo.Maping;
+using MohamedTwo.Interface;
+using MohamedTwo.Repository;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MohamedTwo
@@ -35,7 +38,6 @@ namespace MohamedTwo
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT"
-                    
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -61,7 +63,21 @@ namespace MohamedTwo
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-    
+            // ? Database context
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            // ? Identity
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
             // ? JWT Authentication
             builder.Services.AddAuthentication(options =>
             {
@@ -90,6 +106,14 @@ namespace MohamedTwo
                     }
                 };
             });
+            builder.Services.AddAutoMapper(typeof(MappingProfiles));
+            // ? Register repositories
+            builder.Services.AddScoped<IDishRepositry, DishRepository>();
+            builder.Services.AddScoped<IUserRepositry, UserRepositry>();
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+
             var app = builder.Build();
 
             // ? HTTP request pipeline
